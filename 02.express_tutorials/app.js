@@ -35,30 +35,20 @@
 
 // server.listen(8080, () => {
 //   console.log("Server is running well");
+
 // });
+
+const { products, people } = require("./data");
 const express = require("express");
-const app = express();
-const path = require("path");
+
 const PORT = 8080;
+const app = express();
 
-app.use(express.static("./public"));
-// app.get
+app.use(express.json());
 app.get("/", (request, response) => {
-  response.sendFile(path.resolve(__dirname, "./navbar-app/index.html"));
+  response.json({ message: " jackpot here" });
 });
-
-app.get("/about", (request, response) => {
-  response.status(200).send("About page");
-});
-// app.post
-// app.put
-// app.delete
-// app.all
-app.all("*", (request, response) => {
-  response.status(404).send("<h1>404 Page Not Found");
-});
-// app.use
 
 app.listen(PORT, () => {
-  console.log("Server is Running Well on PORT :  ", { PORT });
+  console.log(`Server is running on Server  : ${PORT}`);
 });

@@ -45,9 +45,6 @@ const PORT = 8080;
 const app = express();
 
 // app.use(express.json());
-app.get("/", (request, response) => {
-  response.send("<h1>Home Page </h1> <a href='/api/products'>product</a>");
-});
 
 // app.get("/api/products", (request, response) => {
 //   const newproducts = products.map((product) => {
@@ -69,31 +66,57 @@ app.get("/", (request, response) => {
 //   return response.json(productSelected);
 // });
 
-app.get("/api/products/:productID/review/:reviewID", (request, response) => {
-  const { productID, reviewID } = request.params;
+// app.get("/api/products/:productID/review/:reviewID", (request, response) => {
+//   const { productID, reviewID } = request.params;
 
-  const productSelected = products.find((product) => product.id === Number(id));
-  if (!productSelected) {
-    response.status(404).send("Product was not found ");
+//   const productSelected = products.find((product) => product.id === Number(id));
+//   if (!productSelected) {
+//     response.status(404).send("Product was not found ");
+//   }
+//   return response.json(productSelected);
+// });
+
+// app.get("/api/v1/query", (request, response) => {
+//   console.log(request.query);
+//   const selectedData = [...products];
+//   console.log(selectedData);
+//   const { name, limit } = request.query;
+//   const soetedSelcted = selectedData.filter((datafetched) => {
+//     return datafetched.name.startsWith(name);
+//   });
+
+//   if (limit) {
+//     const sortedWithLimit = soetedSelcted.slice(0, Number(limit));
+//     response.status(200).json(sortedWithLimit);
+//   } else {
+//     response.status(200).json(soetedSelcted);
+//   }
+// });
+
+const logData = (request, response, next) => {
+  const method = request.method;
+  const url = request.url;
+  const currentYear = new Date().getFullYear();
+
+  const data = {
+    method,
+    url,
+    currentYear,
+  };
+
+  if (request.url === "/") {
+    response.send(data);
+  } else {
+    next();
   }
-  return response.json(productSelected);
+};
+
+app.get("/", logData, (request, response) => {
+  response.send("<h1>Home Page </h1>");
 });
 
-app.get("/api/v1/query", (request, response) => {
-  console.log(request.query);
-  const selectedData = [...products];
-  console.log(selectedData);
-  const { name, limit } = request.query;
-  const soetedSelcted = selectedData.filter((datafetched) => {
-    return datafetched.name.startsWith(name);
-  });
-
-  if (limit) {
-    const sortedWithLimit = soetedSelcted.slice(0, Number(limit));
-    response.status(200).json(sortedWithLimit);
-  } else {
-    response.status(200).json(soetedSelcted);
-  }
+app.get("/about", logData, (request, response) => {
+  response.send("<h1>About us</h1>");
 });
 
 app.listen(PORT, () => {

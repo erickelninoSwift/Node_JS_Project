@@ -20,15 +20,14 @@ app.get("/api/people", (request, response) => {
 });
 
 app.post("/api/people", (request, response) => {
-  console.log(request.body);
   const { name } = request.body;
   if (!name) {
     return response.status(400).json({
       success: false,
-      message: "Please provide data",
+      msg: "Please form is empty provide nam value ",
     });
   }
-  response.status(200).json({
+  response.status(201).json({
     success: true,
     person: name,
   });

@@ -11,10 +11,26 @@ app.use(
     extended: false,
   })
 );
+app.use(express.json());
 app.get("/api/people", (request, response) => {
   response.status(200).send({
     success: true,
     data: people,
+  });
+});
+
+app.post("/api/people", (request, response) => {
+  console.log(request.body);
+  const { name } = request.body;
+  if (!name) {
+    return response.status(400).json({
+      success: false,
+      message: "Please provide data",
+    });
+  }
+  response.status(200).json({
+    success: true,
+    person: name,
   });
 });
 

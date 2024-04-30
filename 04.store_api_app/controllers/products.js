@@ -27,7 +27,7 @@ const getAllproducts = errorWrapper(async (request, response) => {
   }
 
   const myDatafetched = await datafetched;
-
+  console.log(myDatafetched);
   response.status(200).json({
     status: "success",
     products: myDatafetched,
@@ -36,22 +36,41 @@ const getAllproducts = errorWrapper(async (request, response) => {
 });
 
 const getAllProductStatic = errorWrapper(async (request, response) => {
-  const { limit } = request.query;
+  const { numericFilters } = request.query;
 
-  let datafetched = allProductsDB.find({}).sort("name").select("name price");
-  // if (limit) {
-  //   datafetched = datafetched.limit(Number(limit));
-  // } else {
-  //   datafetched = datafetched;
-  // }
+  const queryObject = {};
 
-  const page = Number(request.query.page) || 1;
-  const limitation = Number(request.query.limit) || 5;
-  const skip = (page - 1) * limitation;
+  if (numericFilters) {
+    const operatorMap = {
+      ">": "$gt",
+      ">=": "$gte",
+      "=": "$eq",
+      "<": "$lt",
+      "<=": "$lte",
+    };
+    const regEx = /\b(<|>|>=|=|<|<=)\b/g;
+    let filters = numericFilters.replace(
+      regEx,
+      (match) => `-${operatorMap[match]}-`
+    );
 
-  datafetched = await datafetched.skip(skip).limit(limitation);
-  response.status(200).json({
-    message: datafetched,
+    const options = ["price", "rating"];
+    filters = filters.split("-");
+    const [fiels, operator, unitNumber] = filters;
+
+    filters.forEach((element) => {
+      if (options.includes(element)) {
+        queryObject[fiels] = { [operator]: Number([unitNumber]) };
+      }
+    });
+  }
+
+  console.log(queryObject);
+
+  let datafetched = await allProductsDB.find(queryObject);
+  return response.status(200).json({
+    total: datafetched.length,
+    data: datafetched,
   });
 });
 
